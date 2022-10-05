@@ -1,0 +1,52 @@
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>TILT NOISES :D</title>
+	</head>
+	<body>
+		<h1 id="g">-- CLICK --</h1>
+		<script>
+			document.body.addEventListener(
+				"click",
+				() => {
+					const audioContext = new AudioContext();
+					let soundBuffer = null;
+
+					function playSound() {
+						if (soundBuffer === null) return;
+
+						var source = audioContext.createBufferSource(); // creates a sound source
+						console.log(source);
+						source.buffer = soundBuffer; // tell the source which sound to play
+						source.connect(audioContext.destination); // connect the source to the context's destination (the speakers)
+						source.start();
+					}
+
+					document.body.addEventListener("dragover", (e) => {
+						e.preventDefault();
+					});
+					document.body.addEventListener("drop", (e) => {
+						e.preventDefault();
+
+						if (e.dataTransfer.files) {
+							(async (file) => {
+								const contents = await file.arrayBuffer();
+								audioContext.decodeAudioData(contents, (buffer) => {
+									soundBuffer = buffer;
+								});
+							})(e.dataTransfer.files[0]);
+						}
+					});
+					document.body.addEventListener("keydown", playSound);
+
+					console.log("setup!");
+					g.innerText =
+						"Press any key to make noise. Drag a .wav file to load a sound.";
+				},
+				{ once: true }
+			);
+		</script>
+	</body>
+</html>
